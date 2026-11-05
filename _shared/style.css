@@ -1,0 +1,134 @@
+/* Template file: do not edit it in a module (see "Template and module files" in README.md). */
+/* HTML styling shared by the notes and the sheets. Colours come from the
+   --accent and --brand-* variables in generated/theme-*.scss (from palette.yml). */
+.center {
+  text-align: center;
+}
+
+.infobox {
+  border: 1px solid var(--accent-border);
+  background: var(--accent-soft);
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  margin: 0.5rem 0 1.5rem;
+}
+
+.infobox > :last-child {
+  margin-bottom: 0;
+}
+
+/* Keep aspect ratio of images in figure layouts: Quarto sets max-width: 100%
+   on them but the fixed height attribute would otherwise squash them */
+.quarto-layout-cell img {
+  height: auto;
+}
+
+/* Lists laid out as in the PDF: the label sits in the margin and every paragraph,
+   display and nested list of an item lines up with the item's text. Indents as
+   LaTeX's (2.5em, then 2.2em when nested). */
+main ol,
+main ul {
+  padding-left: 2.5em;
+}
+
+main li ol,
+main li ul {
+  padding-left: 2.2em;
+}
+
+main li::marker {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Labels of ordered lists as written: (a), a) or a. Pandoc's HTML keeps only the
+   numbering, so template.lua wraps each list in a div with classes for the delimiter
+   (.list-parens, .list-paren, .list-period) and the numbering (.list-lower-alpha, ...).
+   The en space (\2002) matches the gap between label and text in the PDF. */
+.list-decimal     { --list-numbering: decimal; }
+.list-lower-alpha { --list-numbering: lower-alpha; }
+.list-upper-alpha { --list-numbering: upper-alpha; }
+.list-lower-roman { --list-numbering: lower-roman; }
+.list-upper-roman { --list-numbering: upper-roman; }
+
+.list-parens > ol > li::marker {
+  content: "(" counter(list-item, var(--list-numbering)) ")\2002";
+}
+
+.list-paren > ol > li::marker {
+  content: counter(list-item, var(--list-numbering)) ")\2002";
+}
+
+.list-period > ol > li::marker {
+  content: counter(list-item, var(--list-numbering)) ".\2002";
+}
+
+/* [2]{.marks}: right-aligned marks */
+.marks {
+  float: right;
+  margin-left: 1em;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+/* Keep floated marks inside their paragraph (e.g. after a displayed equation) */
+p:has(> .marks)::after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
+h2 .marks-total {
+  font-size: 0.8em;
+  line-height: 1.6;
+}
+
+/* [2]{.difficulty}: inline icons, sized like emoji */
+.difficulty {
+  white-space: nowrap;
+  color: var(--accent);
+}
+
+/* A module's own icon (difficulty-icon: path to an image): inlined SVG, 1em tall */
+.difficulty-image svg {
+  height: 1em;
+  width: auto;
+  margin: 0 0.04em;
+  vertical-align: -0.15em;
+}
+
+/* [text]{.marking} and ::: {.marking}: notes for markers (staff builds only) */
+.marking {
+  font-size: 0.9em;
+  font-style: italic;
+  color: var(--accent);
+}
+
+div.marking {
+  border-left: 3px solid var(--accent-border);
+  background: var(--accent-soft);
+  padding: 0.25rem 0.75rem;
+  margin: 0.25rem 0 0.75rem;
+}
+
+div.marking > :last-child {
+  margin-bottom: 0;
+}
+
+/* changes: in a sheet's front matter: "Updated <date>: ..." lines under the header */
+.doc-changes {
+  margin-bottom: 1rem;
+}
+
+.doc-changes p {
+  margin-bottom: 0.25rem;
+}
+
+/* Banner at the top of a sheet: staff copy (alert) or released solutions */
+.doc-banner {
+  color: var(--accent);
+  font-weight: bold;
+}
+
+.doc-banner-alert {
+  color: var(--alert);
+}
