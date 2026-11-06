@@ -1,6 +1,6 @@
 # Answers to the setup questions, used by `copier update` to apply template changes.
 # Do not edit by hand.
-_commit: v0.1.0
+_commit: v0.1.1
 _src_path: gh:brosaplanella/MA-template
 lecturer: Ferran Brosa Planella
 module_code: MA000
