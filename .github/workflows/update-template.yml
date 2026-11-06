@@ -28,6 +28,8 @@ jobs:
 
       - name: Apply the latest template release
         id: update
+        # copier makes temporary commits while merging, so git needs an identity: GitHub's
+        # Actions bot (41898282 is its account ID; the noreply address links to it)
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -39,6 +41,8 @@ jobs:
         with:
           branch: template-update
           delete-branch: true
+          # The bot, not the person who last edited the schedule (the default author)
+          author: "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"
           commit-message: "Update to template ${{ steps.update.outputs.version }}"
           title: "Update to template ${{ steps.update.outputs.version }}"
           body: |
