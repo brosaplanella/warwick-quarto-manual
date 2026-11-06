@@ -1,0 +1,55 @@
+# Keep this module up to date with the template (https://github.com/brosaplanella/MA-template):
+# every Monday, and by hand (Actions > Template update > Run workflow), apply the latest
+# template release with `copier update` and open (or refresh) one pull request with the
+# changes. Only template-owned files change; review the diff, then merge.
+#
+# Needs: Settings > Actions > General > Workflow permissions > "Allow GitHub Actions to
+# create and approve pull requests".
+name: Template update
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"   # Mondays, 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: astral-sh/setup-uv@v6
+
+      - name: Apply the latest template release
+        id: update
+        # copier makes temporary commits while merging, so git needs an identity: GitHub's
+        # Actions bot (41898282 is its account ID; the noreply address links to it)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          uvx copier update --defaults
+          echo "version=$(grep '^_commit:' .copier-answers.yml | cut -d' ' -f2)" >> "$GITHUB_OUTPUT"
+
+      - name: Open or update the pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: template-update
+          delete-branch: true
+          # The bot, not the person who last edited the schedule (the default author)
+          author: "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"
+          commit-message: "Update to template ${{ steps.update.outputs.version }}"
+          title: "Update to template ${{ steps.update.outputs.version }}"
+          body: |
+            `copier update` applied template release **${{ steps.update.outputs.version }}**
+            (changes: https://github.com/brosaplanella/MA-template/commits/${{ steps.update.outputs.version }}).
+
+            Only template-owned files should change. Before merging:
+            - look for conflict markers (`<<<<<<<`), where this repository and the template
+              changed the same lines (most likely in `notes/_quarto.yml` or `pyproject.toml`);
+            - build locally: `uv sync`, `uv run scripts/build.py`, `uv run scripts/build.py staff`.
