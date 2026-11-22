@@ -4,7 +4,10 @@
 # changes. Only template-owned files change; review the diff, then merge.
 #
 # Needs: Settings > Actions > General > Workflow permissions > "Allow GitHub Actions to
-# create and approve pull requests".
+# create and approve pull requests"; and the secret TEMPLATE_UPDATE_TOKEN, a fine-grained
+# personal access token for this repository only (Contents, Pull requests and Workflows:
+# read and write). GitHub's own token may not change files in .github/workflows/, which
+# template releases sometimes do; without the secret, those updates fail to push.
 name: Template update
 
 on:
@@ -39,6 +42,7 @@ jobs:
       - name: Open or update the pull request
         uses: peter-evans/create-pull-request@v8
         with:
+          token: ${{ secrets.TEMPLATE_UPDATE_TOKEN || github.token }}   # see "Needs" above
           branch: template-update
           delete-branch: true
           # The bot, not the person who last edited the schedule (the default author)
